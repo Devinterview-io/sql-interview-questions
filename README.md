@@ -1,4 +1,4 @@
-# 100 Must-Know SQL Interview Questions in 2025
+# 100 Must-Know SQL Interview Questions in 2025 in 2025
 
 <div>
 <p align="center">
