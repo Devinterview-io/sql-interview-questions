@@ -1,4 +1,4 @@
-# 100 Must-Know SQL Interview Questions in 2025
+# SQL
 
 <div>
 <p align="center">
@@ -7,7 +7,7 @@
 </a>
 </p>
 
-#### You can also find all 100 answers here 👉 [Devinterview.io - SQL](https://devinterview.io/questions/web-and-mobile-development/sql-interview-questions)
+answers 👉 [Devinterview.io - SQL](https://devinterview.io/questions/web-and-mobile-development/sql-interview-questions)
 
 <br>
 
