@@ -300,36 +300,40 @@ Conversely, the `HAVING` clause filters data **after** the grouping step, often 
 
 ## 6. Define what a _JOIN_ is in SQL and list its types.
 
-**Join** operations in SQL are responsible for combining rows from multiple tables, primarily based on related columns that are established using a foreign key relationship.
+A **JOIN** operation in SQL is used to combine rows from two or more tables based on a related column between them. The relationship between the tables is typically established using a **foreign key**.
 
-The **three common types of joins** in SQL are:
+The main types of JOINs in SQL are:
 
-- **Inner Join**
-- **Outer Join**
-  - Left Outer Join
-  - Right Outer Join
-  - Full Outer Join
-- **Cross Join**
-- **Self Join**
+1. **Inner Join**: Returns records that have matching values in both tables.
+2. **Outer Join**: Returns all records from one table (the "left" or "right" table) and the matched records from the other table. There are three types of outer joins:
+   - **Left Outer Join** (or **Left Join**): Returns all records from the left table and the matched records from the right table.
+   - **Right Outer Join** (or **Right Join**): Returns all records from the right table and the matched records from the left table. 
+   - **Full Outer Join** (or **Full Join**): Returns all records when there is a match in either the left or right table.
+3. **Cross Join**: Also known as **Cartesian Join**, it returns the Cartesian product of the sets of records from the two or more joined tables. 
+4. **Self Join**: This is a join of a table to itself, typically used when a table has a self-referencing relationship.
 
+Let's look at each of these in more detail with examples.
 
 ### Inner Join
 
-Inner Join only returns rows where there is a match in both tables for the specified column(s).
+An inner join returns only the records that have matching values in both tables being joined.
 
-**Visual Representation**:
+#### Example
+
+Consider two tables, `Table1` and `Table2`:
 
 ```
-Table1:        Table2:            Result (Inner Join):
-
-A   B         B    C               A    B    C
--   -         -    -               -    -    -
-1  aa         aa   20              1   aa   20
-2  bb         bb   30              2   bb   30
-3  cc         cc   40    
+Table1:        Table2:
++---+----+     +----+----+
+| A | B  |     | B  | C  |
++---+----+     +----+----+
+| 1 | aa |     | aa | 20 |
+| 2 | bb |     | bb | 30 |
+| 3 | cc |     | cc | 40 |
++---+----+     +----+----+
 ```
 
-**SQL Query**:
+To perform an inner join on these tables based on the `B` column, we can use the following SQL query:
 
 ```sql
 SELECT Table1.A, Table1.B, Table2.C
@@ -337,52 +341,53 @@ FROM Table1
 INNER JOIN Table2 ON Table1.B = Table2.B;
 ```
 
+The result of this inner join would be:
+
+```
++---+----+----+
+| A | B  | C  |
++---+----+----+
+| 1 | aa | 20 |
+| 2 | bb | 30 |
+| 3 | cc | 40 |
++---+----+----+
+```
 
 ### Outer Join
 
-Outer Joins—whether left, right or full—include all records from one table (the "left" or the "right" table") and matched existing records from the other table. Unmatched records are filled with NULL values for missing columns from the other table.
+An outer join returns all the records from one table (the "left" or "right" table) and the matched records from the other table. There are three types of outer joins: left, right, and full.
 
-#### Left Outer Join
+#### Left Outer Join (or Left Join)
 
-Left Outer Join (or simply Left Join) returns all records from the "left" table and the matched records from the "right" table.
+A left outer join returns all records from the left table and the matched records from the right table. If there is no match, the result from the right table will be `NULL`.
 
-**Visual Representation**:
-
-```
-Table1:        Table2:            Result (Left Outer Join):
-
-A   B         B    C               A    B    C
--   -         -    -               -    -    -
-1  aa         aa   20              1   aa   20
-2  bb         bb   30              2   bb   30
-3  cc         NULL  NULL            3   cc  NULL
-```
-
-**SQL Query**:
+Consider the same tables `Table1` and `Table2` from the previous example. To perform a left outer join, we can use the following SQL query:
 
 ```sql
-SELECT Table1.A, Table1.B, Table2.C
+SELECT Table1.A, Table1.B, Table2.C  
 FROM Table1
 LEFT JOIN Table2 ON Table1.B = Table2.B;
 ```
 
-#### Right Outer Join
-
-Right Outer Join (or Right Join) returns all records from the "right" table and the matched records from the "left" table.
-
-**Visual Representation**:
+The result would be:
 
 ```
-Table1:        Table2:            Result (Right Outer Join):
-
-A   B         B    C               A    B    C
--   -         -    -               -    -    -
-1  aa         aa   20              1   aa   20
-2  bb         bb   30              2   bb   30
-NULL NULL      cc   40             NULL NULL  40
++---+----+------+
+| A | B  | C    |
++---+----+------+
+| 1 | aa | 20   |
+| 2 | bb | 30   |
+| 3 | cc | NULL |
++---+----+------+
 ```
 
-**SQL Query**:
+Notice that the row `(3, cc)` from `Table1` is in the result, but since there was no match in `Table2`, the `C` value is `NULL`.
+
+#### Right Outer Join (or Right Join)
+
+A right outer join returns all records from the right table and the matched records from the left table. If there is no match, the result from the left table will be `NULL`.
+
+Using the same tables, a right outer join query would be:
 
 ```sql
 SELECT Table1.A, Table1.B, Table2.C
@@ -390,25 +395,25 @@ FROM Table1
 RIGHT JOIN Table2 ON Table1.B = Table2.B;
 ```
 
-
-#### Full Outer Join
-
-Full Outer Join (or Full Join) returns all records when there is a match in either the left or the right table.
-
-**Visual Representation**:
+The result would be:
 
 ```
-Table1:        Table2:            Result (Full Outer Join):
-
-A   B         B    C               A    B    C
--   -         -    -               -    -    -
-1  aa         aa   20              1   aa   20
-2  bb         bb   30              2   bb   30
-3  cc         NULL  NULL            3   cc  NULL                           
-NULL NULL      cc   40            NULL NULL  40
++------+------+----+
+| A    | B    | C  |
++------+------+----+
+| 1    | aa   | 20 |
+| 2    | bb   | 30 |
+| NULL | NULL | 40 |
++------+------+----+
 ```
 
-**SQL Query**:
+Here, the row `(cc, 40)` from `Table2` is in the result, but since there was no match in `Table1`, the `A` and `B` values are `NULL`.
+
+#### Full Outer Join (or Full Join)
+
+A full outer join returns all records when there is a match in either the left or right table. If there are no matches, the missing side will contain `NULL`.
+
+A full outer join query on our example tables would be:
 
 ```sql
 SELECT COALESCE(Table1.A, Table2.A) AS A, Table1.B, Table2.C
@@ -416,30 +421,39 @@ FROM Table1
 FULL JOIN Table2 ON Table1.B = Table2.B;
 ```
 
+The result would be:
+
+```
++------+------+------+
+| A    | B    | C    |
++------+------+------+
+| 1    | aa   | 20   |
+| 2    | bb   | 30   |
+| 3    | cc   | NULL |
+| NULL | NULL | 40   |
++------+------+------+
+```
+
+Both the unmatched rows from `Table1` and `Table2` are included in the result, with `NULL` values where there was no match.
 
 ### Cross Join
 
-A Cross Join, also known as a Cartesian Join, produces a result set that is the cartesian product of the two input sets. It will generate every possible combination of rows from both tables.
+A cross join, also known as a Cartesian join, returns the Cartesian product of the sets of records from the two or more joined tables. 
 
-**Visual Representation**:
+Consider these tables:
 
 ```
-Table1:        Table2:            Result (Cross Join):
-
-A   B         C    D               A    B    C    D
--   -         -    -               -    -    -    -
-1  aa        20    X               1   aa   20   X
-2  bb        30    Y               1   aa   30   Y
-3  cc        40    Z               1   aa   40   Z
-                                    2   bb   20   X
-                                    2   bb   30   Y
-                                    2   bb   40   Z
-                                    3   cc   20   X
-                                    3   cc   30   Y
-                                    3   cc   40   Z
+Table1:        Table2:
++---+----+     +----+----+
+| A | B  |     | C  | D  |
++---+----+     +----+----+
+| 1 | aa |     | 20 | X  |
+| 2 | bb |     | 30 | Y  |
+| 3 | cc |     | 40 | Z  |
++---+----+     +----+----+
 ```
 
-**SQL Query**:
+A cross join query would be:
 
 ```sql
 SELECT Table1.*, Table2.*
@@ -447,32 +461,67 @@ FROM Table1
 CROSS JOIN Table2;
 ```
 
+The result would be:
+
+```
++---+----+----+----+
+| A | B  | C  | D  |
++---+----+----+----+
+| 1 | aa | 20 | X  |
+| 1 | aa | 30 | Y  |
+| 1 | aa | 40 | Z  |
+| 2 | bb | 20 | X  |
+| 2 | bb | 30 | Y  |
+| 2 | bb | 40 | Z  |
+| 3 | cc | 20 | X  |
+| 3 | cc | 30 | Y  |
+| 3 | cc | 40 | Z  |
++---+----+----+----+
+```
+
+Every row from `Table1` is combined with every row from `Table2`.
 
 ### Self Join
 
-A Self Join is when a table is joined with itself. This is used when a table has a relationship with itself, typically when it has a parent-child relationship.
+A self join is a join of a table to itself. This is used when a table has a relationship with itself, typically a hierarchical relationship.
 
-**Visual Representation**:
+Consider an `Employee` table:
 
 ```
-Employee:                              Result (Self Join):
-
-EmpID   Name       ManagerID       EmpID  Name     ManagerID
--       -           -               -       -          -
-1      John         3               1     John        3
-2      Amy          3               2     Amy         3
-3      Chris       NULL              3    Chris      NULL
-4      Lisa        2                4     Lisa        2
-5      Mike        2                5     Mike        2
++-------+-------+-----------+
+| EmpID | Name  | ManagerID |
++-------+-------+-----------+
+| 1     | John  | 3         |
+| 2     | Amy   | 3         |
+| 3     | Chris | NULL      |
+| 4     | Lisa  | 2         |
+| 5     | Mike  | 2         |
++-------+-------+-----------+
 ```
 
-**SQL Query**:
+To find each employee's manager, we can self join the `Employee` table:
 
 ```sql
 SELECT E1.EmpID, E1.Name, E1.ManagerID
 FROM Employee AS E1
 LEFT JOIN Employee AS E2 ON E1.ManagerID = E2.EmpID;
 ```
+
+The result would be:
+
+```
++-------+-------+-----------+
+| EmpID | Name  | ManagerID |
++-------+-------+-----------+
+| 1     | John  | 3         |
+| 2     | Amy   | 3         |
+| 3     | Chris | NULL      |
+| 4     | Lisa  | 2         |
+| 5     | Mike  | 2         |
++-------+-------+-----------+
+```
+
+This query joins the `Employee` table with itself, using the `ManagerID` from one instance of the table to match with the `EmpID` from the other instance, allowing us to see the reporting structure of the employees.
 <br>
 
 ## 7. What is a _primary key_ in a database?
